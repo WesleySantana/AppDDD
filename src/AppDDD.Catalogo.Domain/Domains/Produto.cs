@@ -1,11 +1,12 @@
-﻿using AppDDD.Core.DomainObjects;
+﻿using AppDDD.Catalogo.Domain.ValueObjects;
+using AppDDD.Core.DomainObjects;
 using System;
 
-namespace AppDDD.Catalogo.Domain
+namespace AppDDD.Catalogo.Domain.Domains
 {
     public class Produto : Entity, IAggregateRoot
     {
-        #region construtor
+        #region construtores
 
         public Produto(
             string nome,
@@ -14,7 +15,8 @@ namespace AppDDD.Catalogo.Domain
             decimal valor,
             DateTime dataCadastro,
             string imagem,
-            Guid categoriaId)
+            Guid categoriaId,
+            Dimensoes dimensoes)
         {
             Nome = nome;
             Descricao = descricao;
@@ -23,9 +25,12 @@ namespace AppDDD.Catalogo.Domain
             DataCadastro = dataCadastro;
             Imagem = imagem;
             CategoriaId = categoriaId;
+            Dimensoes = dimensoes;
+
+            Validar();
         }
 
-        #endregion construtor
+        #endregion construtores
 
         #region propriedades
 
@@ -36,6 +41,7 @@ namespace AppDDD.Catalogo.Domain
         public DateTime DataCadastro { get; private set; }
         public string Imagem { get; private set; }
         public int QuantidadeEstoque { get; private set; }
+        public Dimensoes Dimensoes { get; set; }
 
         public Guid CategoriaId { get; private set; }
         public virtual Categoria Categoria { get; private set; }
@@ -54,12 +60,18 @@ namespace AppDDD.Catalogo.Domain
             CategoriaId = categoria.Id;
         }
 
-        public void AlterarDescricao(string descricao) => Descricao = descricao;
+        public void AlterarDescricao(string descricao)
+        {
+            Validacoes.ValidarSeVazio(descricao, "O campo Descricao do produto não pode estar vazio");
+            Descricao = descricao;
+        }
 
         public void DebitarEstoque(int quantidade)
         {
             // Se receber um valor negativo, garante que vai ficar positivo
             if (quantidade < 0) quantidade *= -1;
+
+            if (!PossuiEstoque(quantidade)) throw new DomainException("Estoque insuficiente");
             QuantidadeEstoque -= quantidade;
         }
 
@@ -69,22 +81,13 @@ namespace AppDDD.Catalogo.Domain
 
         public void Validar()
         {
+            Validacoes.ValidarSeVazio(Nome, "O campo Nome do produto não pode estar vazio");
+            Validacoes.ValidarSeVazio(Descricao, "O campo Descricao do produto não pode estar vazio");
+            Validacoes.ValidarSeIgual(CategoriaId, Guid.Empty, "O campo CategoriaId do produto não pode estar vazio");
+            Validacoes.ValidarSeMenorIgualMinimo(Valor, 0, "O campo Valor do produto não pode se menor igual a 0");
+            Validacoes.ValidarSeVazio(Imagem, "O campo Imagem do produto não pode estar vazio");
         }
 
         #endregion ad-hoc setters
-    }
-
-    public class Categoria : Entity
-    {
-        public Categoria(string nome, int codigo)
-        {
-            Nome = nome;
-            Codigo = codigo;
-        }
-
-        public string Nome { get; private set; }
-        public int Codigo { get; private set; }
-
-        public override string ToString() => $"{Nome} - {Codigo}";
     }
 }
