@@ -20,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AppDDD.Core\AppDDD.Core.csproj" />
-    <ProjectReference Include="..\src\AppDDD.Catalogo.Domain\AppDDD.Catalogo.Domain.csproj" />
+    <ProjectReference Include="..\AppDDD.Catalogo.Domain\AppDDD.Catalogo.Domain.csproj" />
   </ItemGroup>
 
 </Project>

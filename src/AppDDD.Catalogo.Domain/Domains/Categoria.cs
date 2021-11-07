@@ -1,10 +1,15 @@
 ﻿using AppDDD.Core.DomainObjects;
+using System.Collections.Generic;
 
 namespace AppDDD.Catalogo.Domain.Domains
 {
     public class Categoria : Entity
     {
         #region construtores
+
+        protected Categoria()
+        {
+        }
 
         public Categoria(string nome, int codigo)
         {
@@ -20,6 +25,8 @@ namespace AppDDD.Catalogo.Domain.Domains
 
         public string Nome { get; private set; }
         public int Codigo { get; private set; }
+
+        public virtual ICollection<Produto> Produtos { get; set; }
 
         #endregion propriedades
 
