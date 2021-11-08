@@ -8,6 +8,10 @@ namespace AppDDD.Catalogo.Domain.Domains
     {
         #region construtores
 
+        protected Produto()
+        {
+        }
+
         public Produto(
             string nome,
             string descricao,
